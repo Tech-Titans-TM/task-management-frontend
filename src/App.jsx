@@ -1,23 +1,34 @@
 
 import './App.css'
-import { Routes, Route, Link } from 'react-router-dom';
-import AddTaskPage from './pages/tasks/add-task-page';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/authContext';
+import ProtectedRoute from './utils/protectedRoute';
 
-function App() {
+import LoginPage from './pages/auth/login';
+import SignupPage from './pages/auth/signup';
+import Home from './pages/home/home';
+import Settings from './pages/settings/settings';
+import TaskManagement from './pages/task-management/task-management';
 
-
+export default function App() {
   return (
-    <div>
-        <h1>Task Manager</h1>
-        <nav>
-          <Link to="/add-new-task">Add new task</Link>
-        </nav>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/register" element={<SignupPage />} />
 
-      <Routes>
-        <Route path="/add-new-task" element={<AddTaskPage />} />
-      </Routes>
-    </div>
-  )
+          {/* Private section */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/task-management" element={<TaskManagement />} />
+          </Route>
+
+          {/* 404 */}
+          <Route path="*" element={<p>Not found</p>} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }
-
-export default App
