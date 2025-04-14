@@ -8,7 +8,7 @@ import LoginPage from './pages/auth/login';
 import SignupPage from './pages/auth/signup';
 import Home from './pages/home/home';
 import Settings from './pages/settings/settings';
-import AddEditTasksPage from './pages/task-management/add-edit-task-page';
+import TaskManagementPage from './pages/task-management/task-management-page';
 
 export default function App() {
   return (
@@ -22,7 +22,7 @@ export default function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Home />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/task-management" element={<AddEditTasksPage />} />
+            <Route path="/task-management" element={<TaskManagementPage />} />
           </Route>
 
           {/* 404 */}
