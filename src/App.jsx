@@ -1,14 +1,13 @@
+import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/authContext";
+import ProtectedRoute from "./utils/protectedRoute";
 
-import './App.css'
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './contexts/authContext';
-import ProtectedRoute from './utils/protectedRoute';
-
-import LoginPage from './pages/auth/login';
-import SignupPage from './pages/auth/signup';
-import Home from './pages/home/home';
-import Settings from './pages/settings/settings';
-import AddEditTasksPage from './pages/task-management/add-edit-task-page';
+import LoginPage from "./pages/auth/login";
+import SignupPage from "./pages/auth/signup";
+import Home from "./pages/home/home";
+import Settings from "./pages/settings/settings";
+import AddEditTasksPage from "./pages/task-management/add-edit-task-page";
 
 export default function App() {
   return (
@@ -32,3 +31,5 @@ export default function App() {
     </AuthProvider>
   );
 }
+
+// test
