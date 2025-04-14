@@ -3,12 +3,13 @@ import AddEditTasks from '../../components/task-management/add-edit-tasks';
 
 function TaskManagementPage(){
 
-    const [activeTab, setActiveTab] = useState('all');
+    const [activeTab, setActiveTab] = useState('All');
 
     const tabs = [
-        { label: 'All', key: 'all' },
-        { label: 'Pending', key: 'pending' },
-        { label: 'Completed', key: 'completed' },
+        { label: 'All', key: 'All' },
+        { label: 'In Progress', key: 'In Progress' },
+        { label: 'Pending', key: 'Pending' },
+        { label: 'Completed', key: 'Completed' },
     ];
 
     const [tasks, setTasks] = useState([
@@ -59,13 +60,9 @@ function TaskManagementPage(){
 
             {/* Tabs layout Contents */}
             <div className="p-4 border border-base-300 rounded-box">
-                {activeTab === 'all' && <p>All tasks here...</p>}
-                {activeTab === 'completed' && <p>Completed tasks here...</p>}
-                {activeTab === 'pending' && <p>Pending tasks here...</p>}
                 <table className="table table-zebra w-full">
                     <thead>
                     <tr>
-                        <th>#</th>
                         <th>Task name</th>
                         <th>Description</th>
                         <th>Priority</th>
@@ -81,8 +78,7 @@ function TaskManagementPage(){
                             </tr>
                         ) : (
                             tasks.map((task, index) => (
-                            <tr key={index}>
-                                <th>{index + 1}</th>
+                            (activeTab == 'All' || activeTab == task.status) && (<tr key={index}>
                                 <td>{task.name}</td>
                                 <td>{task.description}</td>
                                 <td>
@@ -107,7 +103,7 @@ function TaskManagementPage(){
                                 <td>
                                 <button className="btn btn-sm btn-neutral mr-2">Edit</button>
                                 </td>
-                            </tr>
+                            </tr>)
                             ))
                         )}
                     </tbody>
