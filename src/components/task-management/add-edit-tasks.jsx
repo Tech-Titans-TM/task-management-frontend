@@ -108,9 +108,7 @@ function AddEditTasks({ onAdd, onCloseAction }) {
             </select>
           </div>
 
-          <div
-              className='flex justify-end'
-          >
+          <div className='flex justify-end'>
             <button type="submit" className='btn btn-primary'>Add Task</button>
           </div>
         </form>
