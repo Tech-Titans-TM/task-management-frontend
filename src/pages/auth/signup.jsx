@@ -1,19 +1,20 @@
 // src/pages/auth/Signup.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/authContext';          
+import { useAuth } from '@/contexts/authContext';
 import logo from '@/assets/logo.png';
 
 export default function Signup() {
-  const { register } = useAuth();       
-  const navigate     = useNavigate();
+  const { register } = useAuth();
+  const navigate = useNavigate();
 
-  const [name, setName]           = useState('');
-  const [email, setEmail]         = useState('');
-  const [password, setPassword]   = useState('');
-  const [confirm, setConfirm]     = useState('');
-  const [error, setError]         = useState('');
-  const [loading, setLoading]     = useState(false);
+  const [Firstname, setFirstName] = useState('');
+  const [lastname, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -26,8 +27,8 @@ export default function Signup() {
 
     setLoading(true);
     try {
-      await register(name, email, password);
-      navigate('/home', { replace: true });   
+      await register(Firstname, lastname, email, password);
+      navigate('/home', { replace: true });
     } catch (err) {
       setError(err?.response?.data?.message || 'Registration failed');
     } finally {
@@ -50,14 +51,27 @@ export default function Signup() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="form-control">
             <label className="label">
-              <span className="label-text">Name</span>
+              <span className="label-text">First Name</span>
             </label>
             <input
               type="text"
               className="input input-bordered"
-              placeholder="Jane Doe"
-              value={name}
-              onChange={e => setName(e.target.value)}
+              placeholder="Jane"
+              value={Firstname}
+              onChange={e => setFirstName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Last Name</span>
+            </label>
+            <input
+              type="text"
+              className="input input-bordered"
+              placeholder="Doe"
+              value={lastname}
+              onChange={e => setLastName(e.target.value)}
               required
             />
           </div>
