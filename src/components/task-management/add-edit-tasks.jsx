@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TaskDto } from '../../utils/api/tasks/dtos/task.dto';
 
-function AddEditTasks({ action = "ADD", onAdd, onCloseAction }) {
-  const [task, setTask] = useState(TaskDto);
+function AddEditTasks({ action = "ADD", onAdd, onDelete, onCloseAction, taskData = TaskDto }) {
+  const [task, setTask] = useState(taskData);
 
   const priorityLevels = ['Low', 'Medium', 'High'];
 
@@ -13,6 +13,10 @@ function AddEditTasks({ action = "ADD", onAdd, onCloseAction }) {
     setTask(TaskDto);
     onCloseAction();
   };
+
+  useEffect(() => {
+    setTask(taskData);
+  }, [taskData]);
 
   return (
     <div className='container'>
@@ -102,8 +106,20 @@ function AddEditTasks({ action = "ADD", onAdd, onCloseAction }) {
             </select>
           </div>
 
-          <div className='flex justify-end'>
-            <button type="submit" className='btn btn-primary'>Add Task</button>
+          <div className='flex flex-row justify-between'>
+            {action == "EDIT" && (
+              <button
+                type="button"
+                className='btn btn-error mr-2'
+                onClick={() => {
+                  onDelete(task._id);
+                  onCloseAction();
+                }}
+              >
+                Delete Task
+              </button>
+            )}
+            <button type="submit" className='btn btn-primary'>{ action == "EDIT" ? "Save changes" : "Add Task"}</button>
           </div>
         </form>
     </div>
