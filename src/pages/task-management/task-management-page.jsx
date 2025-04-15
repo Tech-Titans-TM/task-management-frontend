@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AddEditTasks from '../../components/task-management/add-edit-tasks';
+import { getAllTasks } from '../../utils/api/tasks/tasks.service';
 
 function TaskManagementPage(){
 
@@ -30,6 +31,25 @@ function TaskManagementPage(){
             modal.close();
         }
     }
+
+    const fetchTasks = async (loggedInUser) => {
+        let data = await getAllTasks(loggedInUser.userId);
+        data = data.map(task => ({
+          ...task,
+          id: task._id,
+        }));
+        setTasks(data);
+    };
+
+    useEffect(() => {
+      try {
+        const loggedInUser = JSON.parse(sessionStorage.getItem('user'));
+        fetchTasks(loggedInUser);
+      }
+      catch (error) {
+        console.error('Error fetching tasks:', error);
+      }
+    }, []);
 
     return (
         <div>

@@ -1,14 +1,8 @@
 import { useState } from 'react';
+import { TaskDto } from '../../utils/api/tasks/dtos/task.dto';
 
 function AddEditTasks({ onAdd, onCloseAction }) {
-  const [task, setTask] = useState({
-    name: '',
-    description: '',
-    dueDate: '',
-    dueTime: '',
-    priority: '',
-    status: 'Pending',
-  });
+  const [task, setTask] = useState(TaskDto);
 
   const priorityLevels = ['Low', 'Medium', 'High'];
 
@@ -16,14 +10,7 @@ function AddEditTasks({ onAdd, onCloseAction }) {
     e.preventDefault();
     if (!task) return;
     onAdd(task);
-    setTask({
-      name: '',
-      description: '',
-      dueDate: '',
-      dueTime: '',
-      priority: '',
-      status: 'Pending',
-    });
+    setTask(TaskDto);
     onCloseAction();
   };
 
