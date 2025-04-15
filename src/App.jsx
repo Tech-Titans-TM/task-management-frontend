@@ -9,11 +9,13 @@ import SignupPage from './pages/auth/signup';
 import Home from './pages/home/home';
 import Settings from './pages/settings/settings';
 import TaskManagementPage from './pages/task-management/task-management-page';
+import { ToastContainer } from 'react-toastify';
 
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <ToastContainer />
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<SignupPage />} />

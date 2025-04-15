@@ -17,6 +17,6 @@ export default function ProtectedRoute() {
             <Outlet />
         </Sidebar>
     ) : (
-        <Navigate to="/login" replace state={{ from: location }} />
+        <Navigate to="/" replace state={{ from: location }} />
     );
 }
