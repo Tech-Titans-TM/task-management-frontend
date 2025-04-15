@@ -18,7 +18,7 @@ export default function Login() {
         setError('');
         setLoading(true);
         try {
-            //   await login(email, password);
+            await login(email, password);
             navigate('/home', { replace: true });
         } catch (err) {
             setError('Invalid credentials');
