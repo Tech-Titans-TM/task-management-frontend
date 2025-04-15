@@ -1,9 +1,13 @@
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+export const authApi = axios.create({
+  baseURL: 'http://18.142.227.149:3000',
   timeout: 10_000,
-  withCredentials: true
+});
+
+const api = axios.create({
+  baseURL: 'http://18.142.227.149:3000',
+  timeout: 10_000,
 });
 
 api.interceptors.request.use(config => {
@@ -23,13 +27,20 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(
   res => res,
   err => {
-    if (err.response?.status === 401) {
+    const ignoredPaths = ['/auth/login', '/auth/register'];
+    const requestUrl = err.config?.url || '';
+
+    const shouldIgnore = ignoredPaths.some(path => requestUrl.includes(path));
+
+    if (!shouldIgnore && err.response?.status === 401) {
       sessionStorage.removeItem('accessToken');
       sessionStorage.removeItem('user');
-      window.location.href = '/'; 
+      window.location.href = '/';
     }
+
     return Promise.reject(err);
   }
 );
+
 
 export default api;

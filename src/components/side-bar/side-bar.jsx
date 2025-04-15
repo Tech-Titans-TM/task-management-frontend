@@ -10,11 +10,11 @@ import {
 import logo from '../../assets/logo.png';
 
 export default function Sidebar() {
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        // await logout();
+        await logout();
         navigate('/', { replace: true });
     };
 
@@ -23,14 +23,10 @@ export default function Sidebar() {
      ${isActive ? 'bg-primary text-primary-content' : 'hover:bg-base-200'}`;
 
     return (
-        /* add drawer-mobile so content is pushed, not covered */
         <div className="drawer drawer-mobile lg:drawer-open">
-            {/* 1️⃣ toggle checkbox */}
             <input id="app-drawer" type="checkbox" className="drawer-toggle" />
 
-            {/* 2️⃣ main area now renders routed pages */}
             <div className="drawer-content flex flex-col">
-                {/* hamburger visible only on mobile */}
                 <label htmlFor="app-drawer" className="btn btn-ghost lg:hidden m-2 w-max">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6"
                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -39,24 +35,17 @@ export default function Sidebar() {
                     </svg>
                 </label>
 
-                {/* routed component appears here */}
                 <div className="p-4">
                     <Outlet />
                 </div>
             </div>
 
-            {/* 3️⃣ sidebar itself */}
-            {/* ─── sidebar ───────────────────────────────────────────────────── */}
             <div className="drawer-side">
                 <label htmlFor="app-drawer" className="drawer-overlay" />
-
-                {/* ①  make the whole sidebar a flex column that is as tall as the screen */}
                 <aside className="w-64 h-full bg-base-100 border-r border-base-300 flex flex-col">
                     <div className="p-4">
                         <img src={logo} alt="Logo" className="w-1/2 h-auto mx-auto mb-4" />
                     </div>
-
-                    {/* ②  let the list grow to fill remaining height */}
                     <ul className="menu flex flex-col flex-1 space-y-1 w-full">
                         <li>
                             <NavLink to="/home" className={linkClass}>
@@ -79,8 +68,10 @@ export default function Sidebar() {
                             </NavLink>
                         </li>
 
-                        {/* ③  this auto‑margin now has room to push itself to the bottom */}
                         <li className="mt-auto">
+                            <div className="flex items-center gap-3 px-4 py-2 justify-center rounded-full bg-primary text-primary-content">
+                                <span className="text-sm font-semibold">Hi!, {user?.firstName} {user?.lastName}</span>
+                            </div>
                             <button
                                 onClick={handleLogout}
                                 className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-base-200 w-full"
