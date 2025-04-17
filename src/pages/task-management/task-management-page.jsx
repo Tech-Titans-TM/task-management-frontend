@@ -7,6 +7,10 @@ import {
     deleteTask,
 } from '../../utils/api/tasks/tasks.service';
 import { TaskDto } from '../../utils/api/tasks/dtos/task.dto';
+import {
+    PencilSquareIcon,
+    PlusCircleIcon,
+} from '@heroicons/react/24/outline';
 
 function TaskManagementPage(){
 
@@ -109,6 +113,7 @@ function TaskManagementPage(){
                         document.getElementById('add_edit_task_modal').showModal()
                     }}
                 >
+                    <PlusCircleIcon className="h-4 w-4" />
                     Add New Task
                 </button>
             </div>
@@ -171,7 +176,7 @@ function TaskManagementPage(){
                                 </td>
                                 <td>
                                 <button 
-                                    className="btn btn-sm btn-neutral mr-2"
+                                    className="btn btn-primary btn-sm btn-neutral mr-2"
                                     onClick={() => {
                                                 setCurrentAction('EDIT');
                                                 setSelectedTask({
@@ -187,7 +192,7 @@ function TaskManagementPage(){
                                             }
                                         }
                                     >
-                                        Edit
+                                        <PencilSquareIcon className="h-4 w-4" />
                                 </button>
                                 </td>
                             </tr>)
