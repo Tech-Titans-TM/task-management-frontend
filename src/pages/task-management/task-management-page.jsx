@@ -64,7 +64,7 @@ function TaskManagementPage(){
             status: task.status,
         }
 
-        // Call the updateTask function from the service to sent the request to the backend
+      // Call the updateTask function from the service to sent the request to the backend
       updateTask(task)
         .then(() => {
           fetchTasks(loggedInUser);
