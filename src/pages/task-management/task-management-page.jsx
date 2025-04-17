@@ -1,9 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AddEditTasks from '../../components/task-management/add-edit-tasks';
+import { 
+    getAllTasks,
+    createTask,
+    updateTask,
+    deleteTask,
+} from '../../utils/api/tasks/tasks.service';
+import { TaskDto } from '../../utils/api/tasks/dtos/task.dto';
 
 function TaskManagementPage(){
 
     const [activeTab, setActiveTab] = useState('All');
+    const [currentAction, setCurrentAction] = useState('ADD');
+    const [selectedTask, setSelectedTask] = useState(TaskDto);
+
+    const loggedInUser = JSON.parse(sessionStorage.getItem('user'));
 
     const tabs = [
         { label: 'All', key: 'All' },
@@ -12,16 +23,51 @@ function TaskManagementPage(){
         { label: 'Completed', key: 'Completed' },
     ];
 
-    const [tasks, setTasks] = useState([
-        { name: 'Task 1', description: 'abc', dueDate: '2023-10-01', dueTime: '10:52', priority: 'High', status: 'Pending' },
-        { name: 'Task 2', description: 'xyz', dueDate: '2023-10-02', dueTime: '11:52', priority: 'Medium', status: 'Completed' },
-        { name: 'Task 3', description: '123', dueDate: '2023-10-03', dueTime: '12:52', priority: 'Low', status: 'In Progress' },
-        { name: 'Task 4', description: '456', dueDate: '2023-10-04', dueTime: '13:52', priority: 'High', status: 'Pending' },
-        { name: 'Task 5', description: '789', dueDate: '2023-10-05', dueTime: '14:52', priority: 'Medium', status: 'Completed' },
-    ]);
+    const [tasks, setTasks] = useState([]);
 
     const handleAddTask = (task) => {
-      console.log(`Task added: ${task}`);
+        task = {
+            ...task,
+            dueDate : task.dueDate ? new Date(`${task.dueDate}T00:00:00`).toISOString() : null,
+            dueTime : task.dueTime ? new Date(`${task.dueDate}T${task.dueTime}`).toISOString() : null,
+        }
+      createTask(loggedInUser.userId, task)
+        .then(() => {
+          fetchTasks(loggedInUser);
+        })
+        .catch((error) => {
+          console.error('Error creating task:', error);
+        });
+    };
+
+    const handleEditTask = (task) => {
+        task = {
+            _id: task.id,
+            user: loggedInUser.userId,
+            name: task.name,
+            description: task.description,
+            dueDate : task.dueDate ? new Date(`${task.dueDate}T00:00:00`).toISOString() : null,
+            dueTime : task.dueTime ? new Date(`${task.dueDate}T${task.dueTime}`).toISOString() : null,
+            priority: task.priority,
+            status: task.status,
+        }
+      updateTask(task)
+        .then(() => {
+          fetchTasks(loggedInUser);
+        })
+        .catch((error) => {
+          console.error('Error updating task:', error);
+        });
+    };
+
+    const handleDeleteTask = (taskId) => {
+        deleteTask(taskId)
+            .then(() => {
+                fetchTasks(loggedInUser);
+            })
+            .catch((error) => {
+                console.error('Error deleting task:', error);
+            });
     };
 
     const closeModel = () => {
@@ -29,7 +75,27 @@ function TaskManagementPage(){
         if (modal) {
             modal.close();
         }
+        setCurrentAction('ADD');
+        setSelectedTask(TaskDto);
     }
+
+    const fetchTasks = async (loggedInUser) => {
+        let data = await getAllTasks(loggedInUser.userId);
+        data = data.map(task => ({
+          ...task,
+          id: task._id,
+        }));
+        setTasks(data);
+    };
+
+    useEffect(() => {
+      try {
+        fetchTasks(loggedInUser);
+      }
+      catch (error) {
+        console.error('Error fetching tasks:', error);
+      }
+    }, []);
 
     return (
         <div>
@@ -38,7 +104,10 @@ function TaskManagementPage(){
             <div className='flex justify-end'>
                 <button
                     className="btn btn-primary"
-                    onClick={() => document.getElementById('add_edit_task_modal').showModal()}
+                    onClick={() => {
+                        setCurrentAction('ADD');
+                        document.getElementById('add_edit_task_modal').showModal()
+                    }}
                 >
                     Add New Task
                 </button>
@@ -101,7 +170,25 @@ function TaskManagementPage(){
                                 </span>
                                 </td>
                                 <td>
-                                <button className="btn btn-sm btn-neutral mr-2">Edit</button>
+                                <button 
+                                    className="btn btn-sm btn-neutral mr-2"
+                                    onClick={() => {
+                                                setCurrentAction('EDIT');
+                                                setSelectedTask({
+                                                    ...task,
+                                                    dueDate: task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-CA') : '',
+                                                    dueTime: task.dueTime ? new Date(task.dueTime).toLocaleTimeString('en-GB', {
+                                                        hour: '2-digit',
+                                                        minute: '2-digit',
+                                                        hour12: false,
+                                                    }) : '',
+                                                });
+                                                document.getElementById('add_edit_task_modal').showModal()
+                                            }
+                                        }
+                                    >
+                                        Edit
+                                </button>
                                 </td>
                             </tr>)
                             ))
@@ -113,7 +200,13 @@ function TaskManagementPage(){
             {/* Add/Edit task dialog */}
             <dialog id="add_edit_task_modal" className="modal">
                 <div className="modal-box">
-                    <AddEditTasks onAdd={handleAddTask} onCloseAction={closeModel} />
+                    <AddEditTasks
+                        onAdd={currentAction == "EDIT" ? handleEditTask : handleAddTask}
+                        onDelete={handleDeleteTask}
+                        onCloseAction={closeModel}
+                        action={currentAction}
+                        taskData={selectedTask}
+                    />
                 </div>
             </dialog>
         </div>
