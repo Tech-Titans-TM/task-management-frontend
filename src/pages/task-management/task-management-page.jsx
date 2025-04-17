@@ -7,35 +7,24 @@ import {
     deleteTask,
 } from '../../utils/api/tasks/tasks.service';
 import { TaskDto } from '../../utils/api/tasks/dtos/task.dto';
-import {
-    PencilSquareIcon,
-    PlusCircleIcon,
-} from '@heroicons/react/24/outline';
 
 function TaskManagementPage(){
 
     const [activeTab, setActiveTab] = useState('All');
     const [currentAction, setCurrentAction] = useState('ADD');
     const [selectedTask, setSelectedTask] = useState(TaskDto);
-    const [searchString, setSearchString] = useState('');
-    const [tasksCompletedPercentage, setTasksCompletedPercentage] = useState(0);
 
-    // Get the logged-in user from session storage
     const loggedInUser = JSON.parse(sessionStorage.getItem('user'));
 
-    // Define the tabs layout
     const tabs = [
         { label: 'All', key: 'All' },
         { label: 'In Progress', key: 'In Progress' },
         { label: 'Pending', key: 'Pending' },
         { label: 'Completed', key: 'Completed' },
-        { label: <progress class="progress progress-success w-56" value={tasksCompletedPercentage} max="100"></progress>, key: 'progress_bar' },
     ];
 
     const [tasks, setTasks] = useState([]);
-    const [filteredTasks, setFilteredTasks] = useState([]);
 
-    // Handle task addition
     const handleAddTask = (task) => {
         task = {
             ...task,
@@ -51,7 +40,6 @@ function TaskManagementPage(){
         });
     };
 
-    // Handle task editing
     const handleEditTask = (task) => {
         task = {
             _id: task.id,
@@ -74,7 +62,6 @@ function TaskManagementPage(){
         });
     };
 
-    // Handle task deletion
     const handleDeleteTask = (taskId) => {
         deleteTask(taskId)
             .then(() => {
@@ -85,7 +72,6 @@ function TaskManagementPage(){
             });
     };
 
-    // Close the modal and reset the selected task
     const closeModel = () => {
         const modal = document.getElementById('add_edit_task_modal');
         if (modal) {
@@ -95,7 +81,6 @@ function TaskManagementPage(){
         setSelectedTask(TaskDto);
     }
 
-    // Fetch all tasks from the backend using the getAllTasks function
     const fetchTasks = async (loggedInUser) => {
         let data = await getAllTasks(loggedInUser.userId);
         data = data.map(task => ({
@@ -105,7 +90,6 @@ function TaskManagementPage(){
         setTasks(data);
     };
 
-    // Fetch tasks when the component mounts
     useEffect(() => {
       try {
         fetchTasks(loggedInUser);
@@ -115,35 +99,11 @@ function TaskManagementPage(){
       }
     }, []);
 
-    // Filter tasks based on the search string
-    useEffect(() => {
-        const filtered = tasks.filter((task) => {
-            const taskName = task.name.toLowerCase();
-            const taskDescription = task.description.toLowerCase();
-            const search = searchString.toLowerCase();
-            return taskName.includes(search) || taskDescription.includes(search);
-        });
-        setFilteredTasks(filtered);
-    }, [searchString, tasks]);
-
-    // Calculate the percentage of completed tasks
-    useEffect(() => {
-        const completedTasks = tasks.filter(task => task.status === 'Completed').length;
-        setTasksCompletedPercentage((completedTasks / tasks.length) * 100);
-    }, [tasks]);
-
     return (
         <div>
             <p className='text-2xl font-bold mb-4'>The tasks you have planned</p>
             
             <div className='flex justify-end'>
-                <input
-                    type="text"
-                    placeholder="Search tasks..."
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 max-w-xs mr-4"
-                    value={searchString}
-                    onChange={(e) => setSearchString(e.target.value)}
-                />
                 <button
                     className="btn btn-primary"
                     onClick={() => {
@@ -151,7 +111,6 @@ function TaskManagementPage(){
                         document.getElementById('add_edit_task_modal').showModal()
                     }}
                 >
-                    <PlusCircleIcon className="h-4 w-4" />
                     Add New Task
                 </button>
             </div>
@@ -163,11 +122,7 @@ function TaskManagementPage(){
                     key={tab.key}
                     role="tab"
                     className={`tab ${activeTab === tab.key ? 'tab-active' : ''}`}
-                    onClick={() => {
-                        if (tab.key !== 'progress_bar') {
-                            setActiveTab(tab.key);
-                        }
-                    }}
+                    onClick={() => setActiveTab(tab.key)}
                 >
                     {tab.label}
                 </a>
@@ -182,19 +137,18 @@ function TaskManagementPage(){
                         <th>Task name</th>
                         <th>Description</th>
                         <th>Priority</th>
-                        <th>Due Date</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
 
                     <tbody>
-                        {filteredTasks.length === 0 ? (
+                        {tasks.length === 0 ? (
                             <tr>
                                 <td colSpan="6" className="text-center">No tasks available</td>
                             </tr>
                         ) : (
-                            filteredTasks.map((task, index) => (
+                            tasks.map((task, index) => (
                             (activeTab == 'All' || activeTab == task.status) && (<tr key={index}>
                                 <td>{task.name}</td>
                                 <td>{task.description}</td>
@@ -207,11 +161,6 @@ function TaskManagementPage(){
                                     {task.priority}
                                 </span>
                                 </td>
-                                <td>{task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-CA') : ''} {task.dueTime ? new Date(task.dueTime).toLocaleTimeString('en-GB', {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: false,
-                                }) : ''}</td>
                                 <td>
                                 <span className={`badge ${
                                     task.status === 'Completed' ? 'badge-success' :
@@ -224,7 +173,7 @@ function TaskManagementPage(){
                                 </td>
                                 <td>
                                 <button 
-                                    className="btn btn-primary btn-sm btn-neutral mr-2"
+                                    className="btn btn-sm btn-neutral mr-2"
                                     onClick={() => {
                                                 setCurrentAction('EDIT');
                                                 setSelectedTask({
@@ -240,7 +189,7 @@ function TaskManagementPage(){
                                             }
                                         }
                                     >
-                                        <PencilSquareIcon className="h-4 w-4" />
+                                        Edit
                                 </button>
                                 </td>
                             </tr>)
