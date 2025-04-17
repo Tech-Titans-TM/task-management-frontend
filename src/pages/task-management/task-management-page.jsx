@@ -17,6 +17,7 @@ function TaskManagementPage(){
     const [activeTab, setActiveTab] = useState('All');
     const [currentAction, setCurrentAction] = useState('ADD');
     const [selectedTask, setSelectedTask] = useState(TaskDto);
+    const [searchString, setSearchString] = useState('');
 
     const loggedInUser = JSON.parse(sessionStorage.getItem('user'));
 
@@ -28,6 +29,7 @@ function TaskManagementPage(){
     ];
 
     const [tasks, setTasks] = useState([]);
+    const [filteredTasks, setFilteredTasks] = useState([]);
 
     const handleAddTask = (task) => {
         task = {
@@ -101,11 +103,28 @@ function TaskManagementPage(){
       }
     }, []);
 
+    useEffect(() => {
+        const filtered = tasks.filter((task) => {
+            const taskName = task.name.toLowerCase();
+            const taskDescription = task.description.toLowerCase();
+            const search = searchString.toLowerCase();
+            return taskName.includes(search) || taskDescription.includes(search);
+        });
+        setFilteredTasks(filtered);
+    }, [searchString, tasks]);
+
     return (
         <div>
             <p className='text-2xl font-bold mb-4'>The tasks you have planned</p>
             
             <div className='flex justify-end'>
+                <input
+                    type="text"
+                    placeholder="Search tasks..."
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 max-w-xs mr-4"
+                    value={searchString}
+                    onChange={(e) => setSearchString(e.target.value)}
+                />
                 <button
                     className="btn btn-primary"
                     onClick={() => {
@@ -140,18 +159,19 @@ function TaskManagementPage(){
                         <th>Task name</th>
                         <th>Description</th>
                         <th>Priority</th>
+                        <th>Due Date</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
 
                     <tbody>
-                        {tasks.length === 0 ? (
+                        {filteredTasks.length === 0 ? (
                             <tr>
                                 <td colSpan="6" className="text-center">No tasks available</td>
                             </tr>
                         ) : (
-                            tasks.map((task, index) => (
+                            filteredTasks.map((task, index) => (
                             (activeTab == 'All' || activeTab == task.status) && (<tr key={index}>
                                 <td>{task.name}</td>
                                 <td>{task.description}</td>
@@ -164,6 +184,11 @@ function TaskManagementPage(){
                                     {task.priority}
                                 </span>
                                 </td>
+                                <td>{task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-CA') : ''} {task.dueTime ? new Date(task.dueTime).toLocaleTimeString('en-GB', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false,
+                                }) : ''}</td>
                                 <td>
                                 <span className={`badge ${
                                     task.status === 'Completed' ? 'badge-success' :
