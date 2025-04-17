@@ -110,7 +110,7 @@ export default function Settings() {
 
         </form>
 
-        {/* 🔴 Delete Account Button */}
+        {/*  Delete Account Button */}
         <div className="mt-6">
           <button
             className="btn btn-error btn-outline w-full"
@@ -121,7 +121,7 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* 🔒 Confirmation Modal */}
+      {/* Confirmation Modal */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl w-full max-w-sm shadow-lg">
