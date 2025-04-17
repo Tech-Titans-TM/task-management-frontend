@@ -23,6 +23,7 @@ function TaskManagementPage(){
     // Get the logged-in user from session storage
     const loggedInUser = JSON.parse(sessionStorage.getItem('user'));
 
+    // Define the tabs layout
     const tabs = [
         { label: 'All', key: 'All' },
         { label: 'In Progress', key: 'In Progress' },
@@ -34,6 +35,7 @@ function TaskManagementPage(){
     const [tasks, setTasks] = useState([]);
     const [filteredTasks, setFilteredTasks] = useState([]);
 
+    // Handle task addition
     const handleAddTask = (task) => {
         task = {
             ...task,
@@ -49,6 +51,7 @@ function TaskManagementPage(){
         });
     };
 
+    // Handle task editing
     const handleEditTask = (task) => {
         task = {
             _id: task.id,
@@ -60,6 +63,8 @@ function TaskManagementPage(){
             priority: task.priority,
             status: task.status,
         }
+
+        // Call the updateTask function from the service to sent the request to the backend
       updateTask(task)
         .then(() => {
           fetchTasks(loggedInUser);
@@ -69,6 +74,7 @@ function TaskManagementPage(){
         });
     };
 
+    // Handle task deletion
     const handleDeleteTask = (taskId) => {
         deleteTask(taskId)
             .then(() => {
@@ -79,6 +85,7 @@ function TaskManagementPage(){
             });
     };
 
+    // Close the modal and reset the selected task
     const closeModel = () => {
         const modal = document.getElementById('add_edit_task_modal');
         if (modal) {
@@ -88,6 +95,7 @@ function TaskManagementPage(){
         setSelectedTask(TaskDto);
     }
 
+    // Fetch all tasks from the backend using the getAllTasks function
     const fetchTasks = async (loggedInUser) => {
         let data = await getAllTasks(loggedInUser.userId);
         data = data.map(task => ({
@@ -97,6 +105,7 @@ function TaskManagementPage(){
         setTasks(data);
     };
 
+    // Fetch tasks when the component mounts
     useEffect(() => {
       try {
         fetchTasks(loggedInUser);
@@ -106,6 +115,7 @@ function TaskManagementPage(){
       }
     }, []);
 
+    // Filter tasks based on the search string
     useEffect(() => {
         const filtered = tasks.filter((task) => {
             const taskName = task.name.toLowerCase();
@@ -116,6 +126,7 @@ function TaskManagementPage(){
         setFilteredTasks(filtered);
     }, [searchString, tasks]);
 
+    // Calculate the percentage of completed tasks
     useEffect(() => {
         const completedTasks = tasks.filter(task => task.status === 'Completed').length;
         setTasksCompletedPercentage((completedTasks / tasks.length) * 100);

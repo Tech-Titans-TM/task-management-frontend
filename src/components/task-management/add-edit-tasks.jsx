@@ -11,6 +11,7 @@ function AddEditTasks({ action = "ADD", onAdd, onDelete, onCloseAction, taskData
 
   const priorityLevels = ['Low', 'Medium', 'High'];
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!task) return;
@@ -19,6 +20,7 @@ function AddEditTasks({ action = "ADD", onAdd, onDelete, onCloseAction, taskData
     onCloseAction();
   };
 
+  // Reset task state when taskData changes
   useEffect(() => {
     setTask(taskData);
   }, [taskData]);
@@ -26,14 +28,20 @@ function AddEditTasks({ action = "ADD", onAdd, onDelete, onCloseAction, taskData
   return (
     <div className='container'>
         <div className='flex justify-between place-items-center mb-4'>
+          {/* Popup model title */}
           <p className='text-2xl font-bold mb-4'>{action == "EDIT" ? "Edit Task" : "Add New Task"}</p>
+
+          {/* Popup model close button */}
           <button className='btn text-red-700 p-0 font-bold text-[15px]' onClick={() => {
             setTask(TaskDto);
             onCloseAction();
           }}>
             X
           </button>
+
         </div>
+
+        {/* Popup model form to add/edit tasks */}
         <form onSubmit={handleSubmit} className='form-control'>
           <input
               type="text"
@@ -59,6 +67,7 @@ function AddEditTasks({ action = "ADD", onAdd, onDelete, onCloseAction, taskData
                 type="date"
                 className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full'
                 value={task.dueDate}
+                // Set the minimum date to today
                 min={new Date().toISOString().split('T')[0]}
                 onChange={(e) => setTask({ ...task, dueDate: e.target.value })}
                 required
@@ -112,6 +121,7 @@ function AddEditTasks({ action = "ADD", onAdd, onDelete, onCloseAction, taskData
             </select>
           </div>
 
+          {/* Display the add/edit/delete buttons accordingly */}
           <div className={'flex flex-row ' + (action == "EDIT" ? 'justify-between' : 'justify-end')}>
             {action == "EDIT" && (
               <button
