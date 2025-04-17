@@ -18,7 +18,9 @@ function TaskManagementPage(){
     const [currentAction, setCurrentAction] = useState('ADD');
     const [selectedTask, setSelectedTask] = useState(TaskDto);
     const [searchString, setSearchString] = useState('');
+    const [tasksCompletedPercentage, setTasksCompletedPercentage] = useState(0);
 
+    // Get the logged-in user from session storage
     const loggedInUser = JSON.parse(sessionStorage.getItem('user'));
 
     const tabs = [
@@ -26,6 +28,7 @@ function TaskManagementPage(){
         { label: 'In Progress', key: 'In Progress' },
         { label: 'Pending', key: 'Pending' },
         { label: 'Completed', key: 'Completed' },
+        { label: <progress class="progress progress-success w-56" value={tasksCompletedPercentage} max="100"></progress>, key: 'progress_bar' },
     ];
 
     const [tasks, setTasks] = useState([]);
@@ -113,6 +116,11 @@ function TaskManagementPage(){
         setFilteredTasks(filtered);
     }, [searchString, tasks]);
 
+    useEffect(() => {
+        const completedTasks = tasks.filter(task => task.status === 'Completed').length;
+        setTasksCompletedPercentage((completedTasks / tasks.length) * 100);
+    }, [tasks]);
+
     return (
         <div>
             <p className='text-2xl font-bold mb-4'>The tasks you have planned</p>
@@ -144,7 +152,11 @@ function TaskManagementPage(){
                     key={tab.key}
                     role="tab"
                     className={`tab ${activeTab === tab.key ? 'tab-active' : ''}`}
-                    onClick={() => setActiveTab(tab.key)}
+                    onClick={() => {
+                        if (tab.key !== 'progress_bar') {
+                            setActiveTab(tab.key);
+                        }
+                    }}
                 >
                     {tab.label}
                 </a>
